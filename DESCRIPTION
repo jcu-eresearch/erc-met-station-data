@@ -1,0 +1,16 @@
+Package: ercMetStationData
+Title: R Code for Compiling ERC Met Data
+Version: 0.0.0.9000
+Authors@R: 
+    person("Alex", "Cheesman", , "alex.cheesman@jcu.edu.au", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-3931-5766"))
+Description: R code for compiling ERC Met data.
+License: `use_mit_license()`
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.2
+Imports:
+	dplyr
+	openair
+	plyr
+	ggplot2
