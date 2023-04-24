@@ -15,11 +15,7 @@ jobs:
           - uses: r-lib/actions/setup-r-dependencies@v2
             with:
               cache-version: 2
-              extra-packages: 
-                - any::ggplot2
-                - any::dplyr
-                - any::openair
-                - any::plyr
+              extra-packages: any::ggplot2, any::dplyr, any::openair, any::plyr
               needs: check
 
           - name: Run script
