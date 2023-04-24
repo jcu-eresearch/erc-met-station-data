@@ -4,6 +4,7 @@ library(dplyr) # bind_rows
 library(openair) # timeAverage
 library(plyr) # ddply
 library(ggplot2) # ggplot
+library(lubridate) # now
 
 print(getwd())
 
@@ -75,5 +76,7 @@ Daily <- ddply(wrk_15min, .(day), summarise,
 
 Daily[sapply(Daily, is.infinite)] <- NA
 
-write.csv(wrk_15min, file="../ERC_Data_output/Current_cleaned.csv", row.names=FALSE)
+ts_filename = paste0('ERC_Data_output/Current_cleaned_', 
+                     substr(now(), 0, 10), '.csv')
+write.csv(wrk_15min, file=ts_filename, row.names=FALSE)
   
