@@ -1,10 +1,7 @@
 #R code for compiling ERC Met data
 
-library(plyr) # ddply
 library(dplyr) # bind_rows
 library(openair) # timeAverage
-library(ggplot2) # ggplot
-library(lubridate) # now
 
 print(sessionInfo())
 
@@ -80,10 +77,10 @@ wrk_15min$day <- as.POSIXct(
 print('after smmarize daily...')
 str(wrk_15min)
 
-warnings()
+print(warnings())
 
 # create timestamped filename and save output
-ts_filename = paste0('ERC_Data_output/Current_cleaned_', 
+ts_filename = paste0('ERC_Data_output/Current_cleaned_dplyr190_', 
                      substr(now(), 0, 10), '.csv')
 write.csv(wrk_15min, file=ts_filename, row.names=FALSE)
   
