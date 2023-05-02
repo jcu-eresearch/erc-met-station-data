@@ -11,9 +11,8 @@ print(getwd())
 # read in all of the summary files to date
 file.list <- list.files(path="./Current_summary_data", pattern='*.csv', full.names=TRUE)
 print(length(file.list))
-cat(file.list)
 
-df.list <- lapply(file.list[5], read.csv)
+df.list <- lapply(file.list, read.csv)
 
 #bind all the data together
 wrk <- bind_rows(df.list, .id = "id")
@@ -39,6 +38,7 @@ wrk$datetime <- as.POSIXct(strptime(wrk$timestamp, format="%d-%b-%y %I:%M:%S %p"
 
 # check output
 str(wrk)
+
 
 #convert anything that should be numeric
 wrk$Air.Temp <- as.numeric(paste(wrk$Air.Temp))
