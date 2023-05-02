@@ -6,7 +6,7 @@ library(openair) # timeAverage
 library(ggplot2) # ggplot
 library(lubridate) # now
 
-sessionInfo()
+print(sessionInfo())
 
 print(getwd())
 
@@ -83,7 +83,7 @@ str(wrk_15min)
 warnings()
 
 # create timestamped filename and save output
-ts_filename = paste0('ERC_Data_output/Current_cleaned_2_', 
+ts_filename = paste0('ERC_Data_output/Current_cleaned_', 
                      substr(now(), 0, 10), '.csv')
 write.csv(wrk_15min, file=ts_filename, row.names=FALSE)
   
