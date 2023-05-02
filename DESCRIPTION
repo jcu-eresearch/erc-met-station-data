@@ -11,4 +11,5 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.2
 Imports:
 	dplyr (==1.0.9),
+	lubridate,
 	openair
