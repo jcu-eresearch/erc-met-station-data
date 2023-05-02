@@ -1,8 +1,8 @@
 #R code for compiling ERC Met data
 
+library(plyr) # ddply
 library(dplyr) # bind_rows
 library(openair) # timeAverage
-library(plyr) # ddply
 library(ggplot2) # ggplot
 library(lubridate) # now
 
@@ -10,6 +10,9 @@ print(getwd())
 
 # read in all of the summary files to date
 file.list <- list.files(path="./Current_summary_data", pattern='*.csv', full.names=TRUE)
+print(length(file.list))
+cat(file.list)
+
 df.list <- lapply(file.list[5], read.csv)
 
 #bind all the data together
