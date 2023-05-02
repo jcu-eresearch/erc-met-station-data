@@ -2,6 +2,7 @@
 
 library(dplyr) # bind_rows
 library(openair) # timeAverage
+library(lubridate) # now
 
 print(sessionInfo())
 
