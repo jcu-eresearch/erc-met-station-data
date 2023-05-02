@@ -6,6 +6,8 @@ library(openair) # timeAverage
 library(ggplot2) # ggplot
 library(lubridate) # now
 
+sessionInfo()
+
 print(getwd())
 
 # read in all of the summary files to date
@@ -38,16 +40,12 @@ wrk$datetime <- as.POSIXct(strptime(wrk$timestamp, format="%d-%b-%y %I:%M:%S %p"
 
 # check output
 str(wrk)
-print('after datetime conversion...')
 
 #convert anything that should be numeric
-#wrk$Air.Temp <- as.numeric(paste(wrk$Air.Temp)) # already numeric
+#wrk$Air.Temp <- as.numeric(paste(wrk$Air.Temp)) # emg already numeric
 
 #remove extraneous data from before the system was stable
 wrk<-subset(wrk,datetime>=as.POSIXct("2021-07-20 00:00:00"))
-
-print('after subset...')
-str(wrk)
 
 #remove nonsense data
 wrk$Solar.Radiation[wrk$Solar.Radiation >= 1500] <- NA
@@ -82,8 +80,10 @@ wrk_15min$day <- as.POSIXct(
 print('after smmarize daily...')
 str(wrk_15min)
 
-ts_filename = paste0('ERC_Data_output/Current_cleaned_', 
+warnings()
+
+# create timestamped filename and save output
+ts_filename = paste0('ERC_Data_output/Current_cleaned_2_', 
                      substr(now(), 0, 10), '.csv')
 write.csv(wrk_15min, file=ts_filename, row.names=FALSE)
   
-warnings()
