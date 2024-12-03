@@ -12,7 +12,33 @@ print(getwd())
 file.list <- list.files(path="./Current_summary_data", pattern='*.csv', full.names=TRUE)
 print(length(file.list))
 
+read_and_correct <- function(file) {
+    df <- read.csv(file)
+
+    # Convert logical columns to character (if necessary)
+    df <- df %>%
+        mutate_if(is.logical, as.character)
+
+    return(df)
+}
+
+read_and_convert_to_character <- function(file) {
+    df <- read.csv(file)
+
+    # Convert all columns to character
+    df <- df %>%
+        mutate_all(as.character)
+
+    return(df)
+}
+
+
+# Read all CSV files and store in a list
 df.list <- lapply(file.list, read.csv)
+#or
+df.list <- lapply(file.list, read_and_correct)
+#or
+df.list<-lapply(file.list,read_and_convert_to_character)
 
 #bind all the data together
 wrk <- bind_rows(df.list, .id = "id")
@@ -32,8 +58,11 @@ colnames(wrk) <- c("Data_id",
                    "Vector.Wind.Speed",
                    "Vector.Wind.Direction",
                    "Solar.Radiation")
+str(wrk)
+wrk <- wrk %>%
+    mutate_at(vars(3:14), as.numeric)
 
-#convert to datetime with 
+#convert to datetime with
 wrk$datetime <- as.POSIXct(strptime(wrk$timestamp, format="%d-%b-%y %I:%M:%S %p"))
 
 # check output
@@ -81,7 +110,14 @@ str(wrk_15min)
 print(warnings())
 
 # create timestamped filename and save output
-ts_filename = paste0('ERC_Data_output/Current_cleaned_dplyr190_', 
+ts_filename = paste0('ERC_Data_output/Current_cleaned_dplyr190_',
                      substr(now(), 0, 10), '.csv')
 write.csv(wrk_15min, file=ts_filename, row.names=FALSE)
-  
+
+head(wrk_15min)
+library(ggplot2)
+library(plotly)
+plot<-ggplot()+
+    geom_line(data=wrk_15min,aes(x=date,y=Air.Temp))+
+    scale_y_continuous(limits=c(0,45))
+ggplotly(plot)
