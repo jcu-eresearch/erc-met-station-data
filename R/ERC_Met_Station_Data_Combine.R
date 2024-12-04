@@ -115,9 +115,9 @@ ts_filename = paste0('ERC_Data_output/Current_cleaned_dplyr190_',
 write.csv(wrk_15min, file=ts_filename, row.names=FALSE)
 
 head(wrk_15min)
-library(ggplot2)
-library(plotly)
-plot<-ggplot()+
-    geom_line(data=wrk_15min,aes(x=date,y=Air.Temp))+
-    scale_y_continuous(limits=c(0,45))
-ggplotly(plot)
+#library(ggplot2)
+#library(plotly)
+#plot<-ggplot()+
+#    geom_line(data=wrk_15min,aes(x=date,y=Air.Temp))+
+#    scale_y_continuous(limits=c(0,45))
+#ggplotly(plot)
