@@ -14,7 +14,7 @@ jobs:
               use-public-rspm: true
           - uses: r-lib/actions/setup-r-dependencies@v2
             with:
-              extra-packages: any::dplyr, any::lubridate, any::openair, any::plyr, any::ggplot2
+              extra-packages: any::dplyr, any::lubridate, any::openair, any::plyr, any::ggplot2, any::tidyr
               needs: check
 
           - name: Run script
