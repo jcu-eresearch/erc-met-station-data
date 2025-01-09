@@ -83,7 +83,7 @@ wrk_15min_comb <- merge(wrk_15min, rain_sum) # emg replace wrk_15min varname
 
 # emg save 15 min data
 # create timestamped filename and save output
-wrk_15min_comb_filename = paste0('../ERC_Data_output/', substr(now(), 0, 10), '_Current_cleaned_15min.csv')
+wrk_15min_comb_filename = paste0('./ERC_Data_output/', substr(now(), 0, 10), '_Current_cleaned_15min.csv')
 write.csv(wrk_15min_comb, file=wrk_15min_comb_filename, row.names=FALSE)
 
 # plot 15min summary
@@ -123,7 +123,7 @@ print(warnings())
 Daily[sapply(Daily, is.infinite)] <- NA
 
 # create timestamped filename and save output - daily
-daily_filename = paste0('../ERC_Data_output/', substr(now(), 0, 10), '_Current_cleaned_daily.csv')
+daily_filename = paste0('./ERC_Data_output/', substr(now(), 0, 10), '_Current_cleaned_daily.csv')
 write.csv(Daily, file=daily_filename, row.names=FALSE)
 
 # plot daily
