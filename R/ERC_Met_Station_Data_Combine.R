@@ -2,7 +2,10 @@
 
 library(dplyr) # bind_rows
 library(openair) # timeAverage
+library(plyr) # ddply
 library(lubridate) # now
+library(tidyr) # pivot_longer
+library(ggplot2)
 
 print(sessionInfo())
 
@@ -12,38 +15,23 @@ print(getwd())
 file.list <- list.files(path="./Current_summary_data", pattern='*.csv', full.names=TRUE)
 print(length(file.list))
 
-read_and_correct <- function(file) {
-    df <- read.csv(file)
-
-    # Convert logical columns to character (if necessary)
-    df <- df %>%
-        mutate_if(is.logical, as.character)
-
-    return(df)
+# function to check if csv is empty
+read_csv_file <- function(file) {
+  data <- read.csv(file)
+  if (nrow(data) == 0) {
+    return(NULL)
+  } else {
+    return(data)
+  }
 }
-
-read_and_convert_to_character <- function(file) {
-    df <- read.csv(file)
-
-    # Convert all columns to character
-    df <- df %>%
-        mutate_all(as.character)
-
-    return(df)
-}
-
 
 # Read all CSV files and store in a list
-df.list <- lapply(file.list, read.csv)
-#or
-df.list <- lapply(file.list, read_and_correct)
-#or
-df.list<-lapply(file.list,read_and_convert_to_character)
+df.list <- lapply(file.list, read_csv_file)
 
-#bind all the data together
+# bind all the data together
 wrk <- bind_rows(df.list, .id = "id")
 
-#rename columns appropriately
+# rename columns appropriately
 colnames(wrk) <- c("Data_id",
                    "timestamp",
                    "Air.Temp",
@@ -58,66 +46,94 @@ colnames(wrk) <- c("Data_id",
                    "Vector.Wind.Speed",
                    "Vector.Wind.Direction",
                    "Solar.Radiation")
-str(wrk)
-wrk <- wrk %>%
-    mutate_at(vars(3:14), as.numeric)
 
-#convert to datetime with
-wrk$datetime <- as.POSIXct(strptime(wrk$timestamp, format="%d-%b-%y %I:%M:%S %p"))
+# convert to datetime with
+wrk$date <- as.POSIXct(strptime(wrk$timestamp, format="%d-%b-%y %I:%M:%S %p"))
 
 # check output
 str(wrk)
 
-#convert anything that should be numeric
-#wrk$Air.Temp <- as.numeric(paste(wrk$Air.Temp)) # emg already numeric
+# remove extraneous data from before the system was stable
+wrk<-subset(wrk,date>=as.POSIXct("2021-07-20 00:00:00"))
+# emg remove all the older ones from directory!
 
-#remove extraneous data from before the system was stable
-wrk<-subset(wrk,datetime>=as.POSIXct("2021-07-20 00:00:00"))
-
-#remove nonsense data
+# remove nonsense data
 wrk$Solar.Radiation[wrk$Solar.Radiation >= 1500] <- NA
 wrk$Air.Temp[wrk$Air.Temp >= 60|wrk$Air.Temp <= 10] <- NA
 
-#summarize to 5min data
-names(wrk)[names(wrk) == 'datetime'] <- 'date'
+# rename datetime column to 'date' for timeAverage function 
+#names(wrk)[names(wrk) == 'datetime'] <- 'date' # emg name col date initially
 
-print('after summarize to 5min...')
-str(wrk)
-
-#workout rainfall separately
+# workout rainfall separately
 rain <- subset(wrk, select=c(date,Rainfall))
-wrk <- subset(wrk, select=-c(timestamp,Rainfall,Rainfall.Since.9am))
+env <- subset(wrk, select=-c(timestamp,Rainfall,Rainfall.Since.9am)) # emg replace wrk varname
 
-wrk_15min <- timeAverage(wrk, avg.time = "15 min", statistic = "mean")
+wrk_15min <- timeAverage(env, avg.time = "15 min", statistic = "mean")
 rain_sum <- timeAverage(rain, avg.time = "15 min", statistic = "sum")
+
+###########
+## TBC need to work out how to summarize windfall
+###########
 
 # after timeAverage
 str(wrk_15min)
 str(rain_sum)
 
-wrk_15min <- merge(wrk_15min, rain_sum)
+wrk_15min_comb <- merge(wrk_15min, rain_sum) # emg replace wrk_15min varname
 
-#Summarize daily data sets # emg removed daily section of code
-# add column of just date (not time)
-wrk_15min$day <- as.POSIXct(
-                strftime(wrk_15min$date, format = "%Y-%m-%d %H:%M:%S"),
+# emg save 15 min data
+# create timestamped filename and save output
+wrk_15min_comb_filename = paste0('../ERC_Data_output/', substr(now(), 0, 10), '_Current_cleaned_15min.csv')
+write.csv(wrk_15min_comb, file=wrk_15min_comb_filename, row.names=FALSE)
+
+# plot 15min summary
+pdf_wrk_15min_comb_filename = gsub('.csv', '_plot.pdf', wrk_15min_comb_filename)
+
+pdf(pdf_wrk_15min_comb_filename)
+wrk_15min_comb %>%
+  pivot_longer(cols = c(2:6), names_to = "variable", values_to = "value") %>%
+    ggplot(aes(x = date, y = value, color = variable)) +
+        geom_line(, show.legend = FALSE) +
+        facet_wrap(~ variable, scales = "free_y") +
+        theme_minimal() +
+        labs(x = "Day", y = "Value")
+dev.off()
+
+###########
+# summarize daily data sets
+###########
+
+# add column of just date (no time) to able to summarize daily
+wrk_15min_comb$day <- as.POSIXct(
+                strftime(wrk_15min_comb$date, format = "%Y-%m-%d %H:%M:%S"),
                 format = "%Y-%m-%d")
 
-# view output
-print('after smmarize daily...')
-str(wrk_15min)
+Daily<- ddply(wrk_15min_comb, .(day), summarise,
+                      Max_Temp=max(Air.Temp,na.rm=TRUE),
+                      Av_Temp=mean(Air.Temp,na.rm=TRUE),
+                      Min_Temp=min(Air.Temp,na.rm=TRUE),
+                      Radiant_exposure=sum(Solar.Radiation*15*60,na.rm=TRUE)/1000,
+                      Rainfall =sum(Rainfall,na.rm=TRUE))
 
 print(warnings())
 
-# create timestamped filename and save output
-ts_filename = paste0('ERC_Data_output/Current_cleaned_dplyr190_',
-                     substr(now(), 0, 10), '.csv')
-write.csv(wrk_15min, file=ts_filename, row.names=FALSE)
+# 1: In max(Air.Temp, na.rm = TRUE) :
+#   no non-missing arguments to max; returning -Inf
 
-head(wrk_15min)
-#library(ggplot2)
-#library(plotly)
-#plot<-ggplot()+
-#    geom_line(data=wrk_15min,aes(x=date,y=Air.Temp))+
-#    scale_y_continuous(limits=c(0,45))
-#ggplotly(plot)
+Daily[sapply(Daily, is.infinite)] <- NA
+
+# create timestamped filename and save output - daily
+daily_filename = paste0('../ERC_Data_output/', substr(now(), 0, 10), '_Current_cleaned_daily.csv')
+write.csv(Daily, file=daily_filename, row.names=FALSE)
+
+# plot daily
+pdf_name_daily = gsub('.csv', '_plot.pdf', daily_filename)
+pdf(pdf_name_daily)
+Daily %>%
+  pivot_longer(cols = c(2:6), names_to = "variable", values_to = "value") %>%
+    ggplot(aes(x = day, y = value, color = variable)) +
+        geom_line(, show.legend = FALSE) +
+        facet_wrap(~ variable, scales = "free_y") +
+        theme_minimal() +
+        labs(x = "Day", y = "Value")
+dev.off()
