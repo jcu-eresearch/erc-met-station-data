@@ -1,11 +1,7 @@
 #R code for compiling ERC Met data
 
-library(dplyr) # bind_rows
+library(tidyverse)
 library(openair) # timeAverage
-library(plyr) # ddply
-library(lubridate) # now
-library(tidyr) # pivot_longer
-library(ggplot2)
 
 print(sessionInfo())
 
@@ -17,12 +13,27 @@ print(length(file.list))
 
 # function to check if csv is empty
 read_csv_file <- function(file) {
-  data <- read.csv(file)
+  data <- read_csv(file, show_col_types=FALSE)
   if (nrow(data) == 0) {
     return(NULL)
   } else {
     return(data)
   }
+}
+
+# ensure timestamp is consistent format for date
+normalize_dates <- function(df, date_col) {
+
+  stopifnot(date_col %in% names(df))
+
+  # Step 1: Clean and parse mixed formats
+  parsed_dates <- str_trim(df[[date_col]])
+  parsed_dates <- gsub(" AEST$", "", df[[date_col]])
+  parsed_dates <- as.POSIXct(parsed_dates,
+                             format = c("%d-%b-%y %I:%M:%S %p"),
+                             tz = "Australia/Brisbane")
+  df$date <- parsed_dates
+  return(df)
 }
 
 # Read all CSV files and store in a list
@@ -48,14 +59,13 @@ colnames(wrk) <- c("Data_id",
                    "Solar.Radiation")
 
 # convert to datetime with
-wrk$date <- as.POSIXct(strptime(wrk$timestamp, format="%d-%b-%y %I:%M:%S %p"))
+wrk = normalize_dates(wrk, "timestamp")
 
 # check output
 str(wrk)
 
 # remove extraneous data from before the system was stable
 wrk<-subset(wrk,date>=as.POSIXct("2021-07-20 00:00:00"))
-# emg remove all the older ones from directory!
 
 # remove nonsense data
 wrk$Solar.Radiation[wrk$Solar.Radiation >= 1500] <- NA
@@ -108,12 +118,16 @@ wrk_15min_comb$day <- as.POSIXct(
                 strftime(wrk_15min_comb$date, format = "%Y-%m-%d %H:%M:%S"),
                 format = "%Y-%m-%d")
 
-Daily<- ddply(wrk_15min_comb, .(day), summarise,
-                      Max_Temp=max(Air.Temp,na.rm=TRUE),
-                      Av_Temp=mean(Air.Temp,na.rm=TRUE),
-                      Min_Temp=min(Air.Temp,na.rm=TRUE),
-                      Radiant_exposure=sum(Solar.Radiation*15*60,na.rm=TRUE)/1000,
-                      Rainfall =sum(Rainfall,na.rm=TRUE))
+Daily <- wrk_15min_comb %>%
+  group_by(day) %>%
+  summarise(
+    Max_Temp = max(Air.Temp, na.rm = TRUE),
+    Av_Temp = mean(Air.Temp, na.rm = TRUE),
+    Min_Temp = min(Air.Temp, na.rm = TRUE),
+    Radiant_exposure = sum(Solar.Radiation * 15 * 60, na.rm = TRUE) / 1000,
+    Rainfall = sum(Rainfall, na.rm = TRUE),
+    .groups = "drop"
+)
 
 print(warnings())
 
