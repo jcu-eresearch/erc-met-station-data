@@ -1,7 +1,11 @@
 
 title: "ERC Met Station Data"
-description: "Environmental data summaries and plots"
-theme: jekyll-theme-minimal
+description: ""
+theme: jekyll-theme-cayman
 baseurl: "" # Leave empty unless using a project page
-url: "https://jcu-eresearch.github.io/erc-met-station-data"
+#url: "https://jcu-eresearch.github.io/erc-met-station-data"
 
+
+# Ensure assets folder is included in the build
+include:
+  - assets

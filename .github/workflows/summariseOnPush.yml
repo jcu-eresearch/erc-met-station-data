@@ -1,6 +1,9 @@
 name: summariseOnPush
 run-name: ${{ github.actor }} is summarising new data
-on: [push]
+on: 
+    push:
+       paths:
+          - 'Current_summary_data/*.csv'
 jobs:
     summariseOnPush:
        runs-on: ubuntu-latest
