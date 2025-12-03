@@ -9,3 +9,4 @@ baseurl: "" # Leave empty unless using a project page
 # Ensure assets folder is included in the build
 include:
   - assets
+  - assets/images
