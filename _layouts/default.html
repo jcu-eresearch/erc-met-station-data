@@ -8,17 +8,17 @@
 </head>
 <body>
   <header style="text-align:center; padding:20px;">
-    /assets/images/ERC_Glasshouse_Extra.jpg
+    {{ site.url }}{{ site.baseurl }}/assets/images/ERC_Glasshouse_Extra.jpg
     <h1>ERC Met Station Data</h1>
     <p>Environmental data summaries and plots</p>
   </header>
 
   <main style="max-width:800px; margin:auto; padding:20px;">
-    <!-- Page content will go here -->
+    {{ content }}
   </main>
 
   <footer style="text-align:center; padding:10px; font-size:0.9em; color:#666;">
-    &copy; ERC Met Station Data | Built with Jekyll
+    &copy; jcu-eresearch | Built with Jekyll
   </footer>
 </body>
 </html>
