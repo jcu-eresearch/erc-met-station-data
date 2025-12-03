@@ -99,7 +99,7 @@ write.csv(wrk_15min_comb, file=wrk_15min_comb_filename, row.names=FALSE)
 # plot 15min summary
 png_wrk_15min_comb_filename = gsub('.csv', '_plot.png', wrk_15min_comb_filename)
 
-png(pnd_wrk_15min_comb_filename)
+png(png_wrk_15min_comb_filename)
 print(
 wrk_15min_comb %>%
   pivot_longer(cols = c(2:6), names_to = "variable", values_to = "value") %>%
