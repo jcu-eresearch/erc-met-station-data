@@ -97,9 +97,10 @@ wrk_15min_comb_filename = paste0('./ERC_Data_output/', substr(now(), 0, 10), '_C
 write.csv(wrk_15min_comb, file=wrk_15min_comb_filename, row.names=FALSE)
 
 # plot 15min summary
-pdf_wrk_15min_comb_filename = gsub('.csv', '_plot.pdf', wrk_15min_comb_filename)
+png_wrk_15min_comb_filename = gsub('.csv', '_plot.png', wrk_15min_comb_filename)
 
-pdf(pdf_wrk_15min_comb_filename)
+png(pnd_wrk_15min_comb_filename)
+print(
 wrk_15min_comb %>%
   pivot_longer(cols = c(2:6), names_to = "variable", values_to = "value") %>%
     ggplot(aes(x = date, y = value, color = variable)) +
@@ -107,6 +108,7 @@ wrk_15min_comb %>%
         facet_wrap(~ variable, scales = "free_y") +
         theme_minimal() +
         labs(x = "Day", y = "Value")
+)
 dev.off()
 
 ###########
@@ -141,8 +143,9 @@ daily_filename = paste0('./ERC_Data_output/', substr(now(), 0, 10), '_Current_cl
 write.csv(Daily, file=daily_filename, row.names=FALSE)
 
 # plot daily
-pdf_name_daily = gsub('.csv', '_plot.pdf', daily_filename)
-pdf(pdf_name_daily)
+png_name_daily = gsub('.csv', '_plot.png', daily_filename)
+png(png_name_daily)
+print(
 Daily %>%
   pivot_longer(cols = c(2:6), names_to = "variable", values_to = "value") %>%
     ggplot(aes(x = day, y = value, color = variable)) +
@@ -150,4 +153,7 @@ Daily %>%
         facet_wrap(~ variable, scales = "free_y") +
         theme_minimal() +
         labs(x = "Day", y = "Value")
+)
 dev.off()
+
+
