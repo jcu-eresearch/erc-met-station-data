@@ -10,22 +10,22 @@ The [Environmental Research Complex](https://www.jcu.edu.au/environmental-resear
 - Jekyll-based website for easy browsing
 
 ## Data
-A weather station inside the ERC continuously collects data about the environmental conditions:
-  * Air.Temp
-  * RH
-  * Dew.Point
-  * Rainfall
-  * Rainfall.Since.9am
-  * Last.Hours.Evaporation
-  * Wind.Direction
-  * Current.Wind.Speed
-  * Peak.Wind.Gust
-  * Vector.Wind.Speed
-  * Vector.Wind.Direction
-  * Solar.Radiation
+The Environdata Weather Master 3000 is an automatic weather station designed to suit a variety research, agricultural, commercial and industrial applications.  Its powerful data logger is able to perform complex calculations along with remote communications. Data collected include:
+  * Air.Temp (°C)
+  * Relative.Humidity (%RH)
+  * Dew.Point (°C)
+  * Rainfall (mm)
+  * Rainfall.Since.9am (mm)
+  * Last.Hours.Evaporation (mm)
+  * Wind.Direction (deg)
+  * Current.Wind.Speed (km/hr)
+  * Peak.Wind.Gust (km/hr)
+  * Vector.Wind.Speed (km/hr)
+  * Vector.Wind.Direction (deg)
+  * Solar.Radiation (W-hr/m^2)
 
 ## Methods
-The data is initially cleaned and uploaded to the ERC OneDrive. When new files are pushed to this repository, it triggers a github action to execute the R summary script which produces plots and a summary csv file. The most recent outputs are presented on the github pages site.
+The data is initially cleaned by Bonlec and emailed to the ERC who adds the new csv data to exising OneDrive folders. When new files are pushed to this repository, it triggers a github action to execute [Alex Cheeseman](https://portfolio.jcu.edu.au/researchers/alex.cheesman)'s R summary script which produces plots and a combined summary csv file.
 
 # License
 [CC BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/)
