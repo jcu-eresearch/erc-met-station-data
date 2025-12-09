@@ -13,3 +13,8 @@ a:hover {
   text-decoration: underline;
 }
 
+
+.center-img {
+  display: block;
+  margin: 0 auto;
+}
