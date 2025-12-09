@@ -4,7 +4,7 @@ title: Home
 ---
 
 <div style="text-align:center;">
-<img src="{{ site.url }}{{ site.baseurl }}/assets/images/ERC-Weather-Station_EnvirondataWeatherMaster3000.jpg" alt="ERC Weather Station"/>
+<img src=" {{ '/assets/images/ERC-Weather-Station_EnvirondataWeatherMaster3000.jpg' | relative_url }}" alt="ERC Weather Station"/>
 </div>
 
 The [Environmental Research Complex](https://www.jcu.edu.au/environmental-research-complex) (ERC) is a cutting edge research facility for biological and environmental sciences at James Cook University, Cairns. Facilities include research quality growth facilities for examining the implications of climate change on tropical vegetation as well as the space and resources to conduct a diverse array of experimental projects.
